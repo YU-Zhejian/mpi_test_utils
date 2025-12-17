@@ -6,6 +6,7 @@
 #define _POSIX_C_SOURCE 200809L // NOLINT
 
 #include "mpi_test_utils/constants.h"
+#include "mpi_test_utils/io_tester.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -13,59 +14,33 @@
 #include <time.h>
 #include <unistd.h>
 
-ssize_t test_sequential_write_nompi(char* file_name, size_t block_size, size_t n_blocks)
-{
-    // Open file for writing
-    FILE* file = fopen(file_name, "wb");
-    if (file == NULL)
-    {
-        perror("Failed to open file for writing");
-        return -1;
-    }
-    // Allocate buffer
-    char* buffer = (char*)calloc(block_size, sizeof(char));
-    if (buffer == NULL)
-    {
-        perror("Failed to allocate buffer");
-        fclose(file);
-        return -1;
-    }
-    // Write
-    // Get start time
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    for (size_t i = 0; i < n_blocks; i++)
-    {
-        size_t written = fwrite(buffer, sizeof(char), block_size, file);
-        if (written != block_size)
-        {
-            perror("Failed to write data");
-            free(buffer);
-            fclose(file);
-            return -1;
-        }
-    }
-    // Get end time
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    // Calculate elapsed time in nanosecs
-    ssize_t elapsed_ns = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
-    // Clean up
-    free(buffer);
-    fclose(file);
-    return elapsed_ns;
-}
-
 int main(void)
 {
     size_t total_bytes = G_SIZE * 4; // 4 GB
     ssize_t sw_time = test_sequential_write_nompi("test", BLOCK_SIZE, total_bytes / BLOCK_SIZE);
-    if (sw_time < 0)
-    {
+    if (sw_time < 0) {
         fprintf(stderr, "Sequential write test failed\n");
         return EXIT_FAILURE;
     }
-    double sw_bandwidth = (double)total_bytes / (double)sw_time; // bytes per ns
-    sw_bandwidth *= 1e3; // convert to MB/s
+    double sw_bandwidth = (double)total_bytes / (double)sw_time * 1e3; // bytes per ns convert to MB/s
     printf("Sequential Write Bandwidth: %.6f MB/s\n", sw_bandwidth);
+
+    ssize_t sr_time = test_sequential_read_nompi("test", BLOCK_SIZE, total_bytes / BLOCK_SIZE);
+    if (sr_time < 0) {
+        fprintf(stderr, "Sequential read test failed\n");
+        return EXIT_FAILURE;
+    }
+    double sr_bandwidth = (double)total_bytes / (double)sr_time * 1e3; // bytes per ns convert to MB/s
+    printf("Sequential Read Bandwidth: %.6f MB/s\n", sr_bandwidth);
+
+    ssize_t rr_time = test_random_read_nompi("test", BLOCK_SIZE, total_bytes / BLOCK_SIZE, total_bytes / BLOCK_SIZE);
+    if (rr_time < 0) {
+        fprintf(stderr, "Random read test failed\n");
+        return EXIT_FAILURE;
+    }
+    double rr_bandwidth = (double)total_bytes / (double)rr_time * 1e3; // bytes per ns convert to MB/s
+    printf("Random Read Bandwidth: %.6f MB/s\n", rr_bandwidth);
+
+    unlink("test");
     return EXIT_SUCCESS;
 }

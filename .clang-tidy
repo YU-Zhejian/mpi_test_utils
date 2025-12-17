@@ -1,0 +1,132 @@
+---
+Checks:
+  # Enable all checks by default and disable some of them.
+  - '*'
+
+  # This warning is nonsense.
+  - -readability-identifier-length
+
+  # As we're not using LLVM LibC
+  - -llvmlibc-*
+
+  # We use magic numbers for some constants that are associated with specific
+  # bioinformatics file formats & algorithms & conventions that appears only once.
+  - -cppcoreguidelines-avoid-magic-numbers
+  - -readability-magic-numbers
+
+  # For C headers, we use our own format of header guard
+  # For C++ headers, we use `#pragma once` which is implemented in almost all C++ compilers.
+  - -llvm-header-guard
+  - -portability-avoid-pragma-once
+
+  # This warning is nonsense.
+  - -bugprone-easily-swappable-parameters
+
+  # This warning is nonsense.
+  - -cppcoreguidelines-avoid-do-while
+
+  # This warning is nonsense.
+  - -readability-math-missing-parentheses
+
+  # We used C arrays (and pointer arithmetics) to improve performance.
+  - -*-avoid-c-arrays
+  - -cppcoreguidelines-pro-bounds-constant-array-index
+  - -cppcoreguidelines-pro-bounds-pointer-arithmetic
+
+  # This warning generates wierd code.
+  - -modernize-use-trailing-return-type
+
+  # As we're only using std::endl in user-interface-related IO,
+  # using std::endl is acceptable.
+  - -performance-avoid-endl
+
+  # This warning is nonsense.
+  - -fuchsia-overloaded-operator
+
+  # This warning is nonsense.
+  # Those FORTRAN people write functions with thousands lines of code.
+  - -readability-function-cognitive-complexity
+
+  # We use this function to preserve some historical code in case
+  # our own implementation fails.
+  - -readability-avoid-unconditional-preprocessor-if
+
+  # We allow default atguments.
+  - -fuchsia-default-arguments-*
+
+  # In compiler we trust.
+  - -altera-unroll-loops
+  - -altera-id-dependent-backward-branch
+
+  # TODO: No idea why const or ref data members are not recommended.
+  - -cppcoreguidelines-avoid-const-or-ref-data-members
+
+  # TODO: No idea why private member variables are not recommended.
+  - -*-non-private-member-variables-in-classes
+
+  # TODO: No idea why static objects are not recommended.
+  - -fuchsia-statically-constructed-objects
+  - -cert-err58-cpp
+
+  # TODO: No idea why implicit array to pointer conversions are not recommended.
+  - -cppcoreguidelines-pro-bounds-array-to-pointer-decay
+  - -*-no-array-decay
+
+  # We do not use Abseil.
+  - -abseil-*
+
+  # We minimize the use of Boost.
+  # Those checks would suggest boost replacements over STL, so disabled.
+  - -boost-use-*
+
+  # This prevents us from using several HTSLib functions, so we disable it.
+  - -*vararg
+
+  # Sometimes we use goto for error handling.
+  - -*-avoid-goto
+
+  # We have no GSLs
+  - -cppcoreguidelines-owning-memory
+
+  # Numerous third-party header files violates this warning.
+  # So disabled to avoid false positives.
+  - -hicpp-signed-bitwise
+
+  # Seems there's no other people who's maintaining the code.
+  - -google-readability-todo
+
+  # Memory management by hand of temporary objects are needed
+  # to interact with third-party C libraries.
+  - -*-no-malloc
+
+  # Commonly used in tests and entry points
+  - -google-build-using-namespace
+
+  # HTSLib uses unions in several places.
+  - -cppcoreguidelines-pro-type-union-access
+
+  # snprintf_s is not available in all platforms.
+  - -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+
+  # 've been using anonymous namespace for internal linkage for a long time.
+  - -llvm-prefer-static-over-anonymous-namespace
+
+  # Using list of defines looks better than ifdef and elif defines.
+  - -*-use-concise-preprocessor-directives
+
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: webkit
+
+CheckOptions:
+  - key: misc-include-cleaner.IgnoreHeaders
+    value: 'mkl.*\.h;boost/.*/details/.*;boost/test/.*.cstdint;cstddef;fmt/format.h'
+
+HeaderFileExtensions:
+  - h
+  - hh
+ImplementationFileExtensions:
+  - c
+  - cc
+...
+

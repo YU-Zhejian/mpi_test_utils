@@ -10,4 +10,4 @@
 
 #define BLOCK_SIZE (4 * K_SIZE)
 
-#endif //MPI_TEST_UTILS_CONSTANTS_H
+#endif // MPI_TEST_UTILS_CONSTANTS_H

@@ -17,7 +17,7 @@ add_library(mpi_test_utils SHARED ${LIB_SOURCES})
 target_link_libraries(mpi_test_utils PUBLIC ${LINK_LIBS})
 
 add_executable(io_speed_nompi exe/io_speed_nompi.c)
-target_link_libraries( io_speed_nompi PRIVATE mpi_test_utils )
+target_link_libraries(io_speed_nompi PRIVATE mpi_test_utils)
 
 add_executable(clock_difference exe/clock_difference.c)
-target_link_libraries( clock_difference PRIVATE mpi_test_utils )
+target_link_libraries(clock_difference PRIVATE mpi_test_utils)
